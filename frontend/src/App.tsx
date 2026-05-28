@@ -15,10 +15,12 @@ export default function App() {
     setIsLoading(true);
     setOptimizedPrompt('');
 
-    // Apunta al localhost en desarrollo, o lee la URL de producción configurada en las variables de entorno de Vite
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3000';
+    // --- CONFIGURACIÓN DE URL ---
+    // Reemplaza 'https://ai-thrift-six.vercel.app' por tu dominio real que aparece en Vercel Overview
+    const PRODUCTION_URL = 'https://ai-thrift-six.vercel.app'; 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || PRODUCTION_URL;
 
-try {
+    try {
       const response = await fetch(`${API_BASE_URL}/api/optimize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,7 +38,7 @@ try {
       });
     } catch (error) {
       console.error(error);
-      alert('Error procesando el prompt. Verifica que el backend esté encendido.');
+      alert('Error procesando el prompt. Verifica que el backend en Vercel esté "Ready".');
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +78,7 @@ try {
             </div>
             <textarea
               className="w-full h-64 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm focus:outline-none focus:border-emerald-500 resize-none text-slate-300 placeholder-slate-600"
-              placeholder="Ej: Hola Claude, cómo estás? Quería pedirte por favor si me puedes ayudar a hacer un componente de login limpio con fondo gris oscuro, gracias."
+              placeholder="Ej: Hola Claude, ¿cómo estás? Quería pedirte por favor..."
               value={userPrompt}
               onChange={(e) => setUserPrompt(e.target.value)}
             />
@@ -94,7 +96,7 @@ try {
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
           <div className="flex flex-col h-full justify-between">
             <div className="flex justify-between items-center mb-4">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">Prompt Comprimido para Producción</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">Prompt Comprimido</label>
               {optimizedPrompt && (
                 <button
                   onClick={copyToClipboard}
@@ -105,33 +107,32 @@ try {
               )}
             </div>
             <div className="w-full h-64 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm font-mono text-slate-300 overflow-y-auto whitespace-pre-wrap">
-              {optimizedPrompt || <span className="text-slate-600 italic text-xs">El resultado pulido aparecerá aquí listo para pegarse en tu herramienta de IA...</span>}
+              {optimizedPrompt || <span className="text-slate-600 italic text-xs">El resultado aparecerá aquí...</span>}
             </div>
           </div>
 
           {stats && (
             <div className="mt-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-lg flex justify-around text-center">
               <div>
-                <span className="block text-[10px] text-slate-500 uppercase tracking-wider">Tokens Entrada</span>
+                <span className="block text-[10px] text-slate-500 uppercase tracking-wider">Entrada</span>
                 <span className="text-base font-bold text-slate-400">{stats.before}</span>
               </div>
               <div className="border-l border-slate-800"></div>
               <div>
-                <span className="block text-[10px] text-slate-500 uppercase tracking-wider">Tokens Salida</span>
+                <span className="block text-[10px] text-slate-500 uppercase tracking-wider">Salida</span>
                 <span className="text-base font-bold text-emerald-400">{stats.after}</span>
               </div>
               <div className="border-l border-slate-800"></div>
               <div>
-                <span className="block text-[10px] text-slate-500 uppercase tracking-wider">Ahorro Real</span>
+                <span className="block text-[10px] text-slate-500 uppercase tracking-wider">Ahorro</span>
                 <span className="text-base font-bold text-emerald-400">~{stats.savings}%</span>
               </div>
             </div>
           )}
         </div>
       </div>
-
       <footer className="mt-6 text-center text-[11px] text-slate-600 border-t border-slate-900 pt-4">
-        AI-Thrift Utility App • Herramienta de optimización de costes y microingeniería de prompts.
+        AI-Thrift Utility App
       </footer>
     </div>
   );
