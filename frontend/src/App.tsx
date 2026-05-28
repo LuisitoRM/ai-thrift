@@ -15,19 +15,25 @@ export default function App() {
     setIsLoading(true);
     setOptimizedPrompt('');
 
-    // --- CONFIGURACIÓN DE URL ---
-    // Reemplaza 'https://ai-thrift-six.vercel.app' por tu dominio real que aparece en Vercel Overview
+    // --- AJUSTE DE CONEXIÓN DE PRODUCCIÓN ---
+    // Forzamos la URL de Vercel para evitar el error de logs vacíos
     const PRODUCTION_URL = 'https://ai-thrift-six.vercel.app'; 
     const API_BASE_URL = import.meta.env.VITE_API_URL || PRODUCTION_URL;
 
     try {
+      // Agregamos un log en la consola del navegador para que tú veas a dónde está llamando
+      console.log(`Intentando conectar a: ${API_BASE_URL}/api/optimize`);
+
       const response = await fetch(`${API_BASE_URL}/api/optimize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: userPrompt, tool }),
       });
 
-      if (!response.ok) throw new Error('Error al conectar con el servidor optimizador');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${errorText}`);
+      }
       
       const data = await response.json();
       setOptimizedPrompt(data.optimizedPrompt);
@@ -37,8 +43,8 @@ export default function App() {
         savings: data.savings,
       });
     } catch (error) {
-      console.error(error);
-      alert('Error procesando el prompt. Verifica que el backend en Vercel esté "Ready".');
+      console.error("Error detallado:", error);
+      alert('Error de conexión. Revisa que el Root Directory en Vercel sea "backend".');
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +113,7 @@ export default function App() {
               )}
             </div>
             <div className="w-full h-64 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm font-mono text-slate-300 overflow-y-auto whitespace-pre-wrap">
-              {optimizedPrompt || <span className="text-slate-600 italic text-xs">El resultado aparecerá aquí...</span>}
+              {optimizedPrompt || <span className="text-slate-600 italic text-xs">El resultado aparecerá aquí listo para pegarse...</span>}
             </div>
           </div>
 
@@ -132,7 +138,7 @@ export default function App() {
         </div>
       </div>
       <footer className="mt-6 text-center text-[11px] text-slate-600 border-t border-slate-900 pt-4">
-        AI-Thrift Utility App
+        AI-Thrift Utility App • Optimizador de Prompts
       </footer>
     </div>
   );
